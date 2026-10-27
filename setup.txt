@@ -1,0 +1,72 @@
+#SETUP 
+
+
+
+sudo apt update
+sudo apt install -y python3 python3-pip python3-venv
+
+
+mkdir -p ~/gemini-terminal
+cd ~/gemini-terminal
+
+python3 -m venv .venv
+source .venv/bin/activate
+
+python -m pip install --upgrade pip
+python -m pip install google-genai
+
+python -c "from google import genai; print('Gemini SDK installed successfully')"
+
+
+
+#STEP 1
+read -rsp "Paste your Gemini API key: " GEMINI_API_KEY
+echo
+export GEMINI_API_KEY
+
+#STEP 2(TO VERIFY)
+
+python3 -c 'from google import genai; c=genai.Client(); r=c.models.generate_content(model="gemini-3.5-flash-lite", contents="Say hello bro"); print(r.text)'
+
+#STEP 3
+nano gemini_chat.py
+
+#STEP 4
+
+from google import genai
+client = genai.Client()
+chat = client.chats.create(model="gemini-3.5-flash")
+
+print("\n🤖 Gemini Terminal Chat")
+print("Type 'exit' to quit or 'reset' to restart.\n")
+
+while True:
+    try:
+        prompt = input("You: ").strip()
+
+        if not prompt:
+            continue
+
+        if prompt.lower() in ("exit", "quit"):
+            print("Gemini: See you, bro!")
+            break
+
+        if prompt.lower() == "reset":
+            chat = client.chats.create(model="gemini-3.5-flash")
+            print("Gemini: Conversation reset!\n")
+            continue
+
+        response = chat.send_message(prompt)
+        print(f"\nGemini: {response.text}\n")
+
+    except KeyboardInterrupt:
+        print("\nChat ended.")
+        break
+    except Exception as error:
+        print(f"\nError: {error}\n")
+
+#STEP 5
+ctrl+ O then enter then ctrl+ X
+
+#STEP 6
+python3 gemini_chat_1.py
